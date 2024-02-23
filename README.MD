@@ -13,4 +13,5 @@
 
 ## usage
 
-- `curl -X POST http://localhost:10080/api/v1/command -d "cmd=/bin/bash&image=debian:stretch"`
+- `export CMD_SANDBOX_CONF_PATH=/path/to/your/config` 
+- `curl -X POST http://localhost:10080/api/v1/command/image -d "cmd=/bin/bash&image=debian:stretch&init_cmd=/bin/sh"`

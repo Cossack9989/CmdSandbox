@@ -1,0 +1,9 @@
+{
+  "debian": [
+    "jessie",
+    "stretch",
+    "buster",
+    "bullseye",
+    "bookworm"
+  ]
+}
