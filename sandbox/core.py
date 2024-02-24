@@ -3,6 +3,7 @@ import uuid
 import falco
 import docker
 
+from time import sleep
 from typing import List
 from docker.models import containers as con
 from func_timeout import func_timeout, FunctionTimedOut
@@ -42,11 +43,12 @@ class Monitor:
 
 class Container:
 
-    def __init__(self, image_name: str, init_command="/bin/sh", debug=False):
+    def __init__(self, image_name: str, init_command="/bin/sh", debug=False, timeout=0):
         self.image_name = image_name
         self.init_command = init_command
         self.client = docker.from_env()
         self.debug = debug
+        self.timeout = timeout
         self.container: con.Container = con.Container()
         self.container_name: str = ""
 
@@ -63,6 +65,7 @@ class Container:
         return self.container
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        sleep(self.timeout)
         self.container.stop()
         self.container.remove()
         self.client.close()
@@ -70,11 +73,12 @@ class Container:
 
 class Containers:
 
-    def __init__(self, image_name_list: List[str], init_command="/bin/sh", debug=False):
+    def __init__(self, image_name_list: List[str], init_command="/bin/sh", debug=False, timeout=0):
         self.image_name_list = image_name_list
         self.init_command = init_command
         self.client = docker.from_env()
         self.debug = debug
+        self.timeout = timeout
         self.container_list: List[con.Container] = []
         self.container_name_list: List[str] = []
 
@@ -87,6 +91,7 @@ class Containers:
         return self.container_list
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        sleep(self.timeout)
         for container in self.container_list:
             container.stop()
             container.remove()

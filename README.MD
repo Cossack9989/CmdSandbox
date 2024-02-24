@@ -4,14 +4,20 @@
 
 ## install
 
-- `docker` is a must
-- execute `install.sh`
+- `docker.service` on Linux is a must
+- `install.sh`
 
 ## start
 
-- execute `start.sh`
+- `export CMD_SANDBOX_CONF_PATH=/path/to/your/config`
+- `start.sh`
 
 ## usage
 
-- `export CMD_SANDBOX_CONF_PATH=/path/to/your/config` 
-- `curl -X POST http://localhost:10080/api/v1/command/image -d "cmd=/bin/bash&image=debian:stretch&init_cmd=/bin/sh"`
+- ```
+  curl -X 'POST' \
+  'http://127.0.0.1:8080/api/v1/command/image' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{"cmd": "/bin/bash", "image": "debian:buster", "init_cmd": "/bin/sh", "timeout": 0}'
+```

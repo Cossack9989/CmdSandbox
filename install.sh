@@ -22,4 +22,4 @@ fi
 
 cp -b falco.yaml /etc/falco/falco.yaml
 
-pip install python-multipart fastapi uvicorn docker
+pip install python-multipart fastapi uvicorn docker pydantic
