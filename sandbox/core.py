@@ -35,6 +35,10 @@ class Monitor:
                 continue
             if "container.id" not in event["output_fields"].keys():
                 continue
+            if "priority" not in event.keys():
+                continue
+            if event["priority"].upper() not in ["EMERGENCY", "ALERT", "CRITICAL", "ERROR", "WARNING"]:
+                continue
             if event["output_fields"]["container.id"] in self.container_id_list:
                 self.events.append(event)
         if self.debug:

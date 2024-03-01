@@ -8,4 +8,4 @@ fi
 falcoctl driver install --type=modern_ebpf --compile
 systemctl start falco-modern-bpf
 
-uvicorn run:sandbox --host 0.0.0.0 --port 10080 --workers 4 &
+uvicorn run:sandbox --host 127.0.0.1 --port 20000 --workers 2 &
