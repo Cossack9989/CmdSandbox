@@ -22,4 +22,4 @@ fi
 
 cp -b falco.yaml /etc/falco/falco.yaml
 
-pip3 install func_timeout python-multipart fastapi uvicorn docker pydantic
+pip3 install func_timeout python-multipart fastapi uvicorn docker pydantic pymongo

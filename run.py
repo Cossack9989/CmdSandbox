@@ -17,6 +17,11 @@ async def lifespan(_app: FastAPI):
             if len(client.images.list(filters={"reference": f"{image_name}:{tag}"})) == 0:
                 client.images.pull(repository=image_name, tag=tag)
                 print(f"Prepared {image_name}:{tag}")
+    if len(client.containers.list(filters={"name": "CmdSandboxDb", "status": "running"}) + client.containers.list(filters={"name": "CmdSandboxDb", "status": "restarting"})) < 1:
+        for container in client.containers.list(filters={"name": "CmdSandboxDb", "status": "exited"}) + client.containers.list(filters={"name": "CmdSandboxDb", "status": "paused"}):
+            container.stop()
+            container.remove()
+        client.containers.run("mongo", detach=True, name="CmdSandboxDb", ports={"27017/tcp": ("127.0.0.1", 27017)}, volumes=["/opt/mongo:/data/db"])
     yield
     client.close()
 

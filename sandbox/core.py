@@ -2,6 +2,7 @@ import json
 import uuid
 import falco
 import docker
+import pymongo
 
 from time import sleep
 from typing import List
@@ -12,14 +13,17 @@ from func_timeout import func_timeout, FunctionTimedOut
 class Monitor:
 
     def __init__(self, container_id_list: List[str], unix_path="unix:///run/falco/falco.sock", debug=False):
-        self.client = falco.Client(endpoint=unix_path, output_format="json")
+        self.falco_client = falco.Client(endpoint=unix_path, output_format="json")
+        self.mongo_client = pymongo.MongoClient("mongodb://localhost:27017")
+        self.events_database = self.mongo_client["falco_events_database"]
+        self.events_collection = self.mongo_database["falco_events_collection"]
         self.events = []
         self.raw_events = []
         self.container_id_list = container_id_list
         self.debug = debug
 
     def _mon(self):
-        for event in self.client.get():
+        for event in self.falco_client.get():
             if isinstance(event, str):
                 self.raw_events.append(json.loads(event))
 
@@ -37,6 +41,7 @@ class Monitor:
                 continue
             if "priority" not in event.keys():
                 continue
+            self.events_collection.insert_one(event)
             if event["priority"].upper() not in ["EMERGENCY", "ALERT", "CRITICAL", "ERROR", "WARNING"]:
                 continue
             if event["output_fields"]["container.id"] in self.container_id_list:
