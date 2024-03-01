@@ -16,7 +16,7 @@ class Monitor:
         self.falco_client = falco.Client(endpoint=unix_path, output_format="json")
         self.mongo_client = pymongo.MongoClient("mongodb://localhost:27017")
         self.events_database = self.mongo_client["falco_events_database"]
-        self.events_collection = self.mongo_database["falco_events_collection"]
+        self.events_collection = self.events_database["falco_events_collection"]
         self.events = []
         self.raw_events = []
         self.container_id_list = container_id_list
