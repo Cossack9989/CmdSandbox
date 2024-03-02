@@ -41,11 +41,20 @@ class Monitor:
                 continue
             if "priority" not in event.keys():
                 continue
-            self.events_collection.insert_one(event)
-            if event["priority"].upper() not in ["EMERGENCY", "ALERT", "CRITICAL", "ERROR", "WARNING"]:
-                continue
-            if event["output_fields"]["container.id"] in self.container_id_list:
-                self.events.append(event)
+            doc_id = self.events_collection.insert_one(event).inserted_id
+            event["_id"] = f"{doc_id}"
+            indexes = self.events_collection.index_information()
+            index_key_name_list = set()
+            [[index_key_name_list.add(index_key_name) for index_key_name, _ in indexes[index_name]["key"]] for index_name in indexes.keys()]
+            if "time" not in index_key_name_list:
+                self.events_collection.create_index("time", expireAfterSeconds=60*60*12)
+            # FIXME: can not query by output_fields."container.id", dot in sub key name
+            for hit_event in self.events_collection.find():
+                hit_event["_id"] = str(hit_event["_id"])
+                if hit_event["priority"].upper() not in ["EMERGENCY", "ALERT", "CRITICAL", "ERROR", "WARNING"]:
+                    continue
+                if hit_event["output_fields"]["container.id"] in self.container_id_list:
+                    self.events.append(event)
         if self.debug:
             [print(json.dumps(event, indent=4)) for event in self.events]
 
